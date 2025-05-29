@@ -1,0 +1,34 @@
+{
+    "name": "PlayerInput",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "2f70343b-b63f-4dfc-8b88-355d0d8cc6c3",
+            "actions": [
+                {
+                    "name": "Tap",
+                    "type": "Button",
+                    "id": "9063fa61-156f-4be9-afed-62b0b5c79824",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "836f1f2b-283c-41d4-afc1-e9efd4c46cd2",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
