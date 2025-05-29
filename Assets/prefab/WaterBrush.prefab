@@ -211,16 +211,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level:
-  - range: 12
+  - range: 15
     damage: 12
     fireRate: 3
     cost: 100
-  - range: 14
+  - range: 16
     damage: 16
     fireRate: 3.25
     cost: 200
   - range: 18
-    damage: 25
+    damage: 30
     fireRate: 3
     cost: 300
   towerRange: {fileID: 4321692034252504827}

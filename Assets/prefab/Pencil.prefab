@@ -341,8 +341,8 @@ Transform:
   - {fileID: 5107059206020465295}
   - {fileID: 8505982764998504990}
   - {fileID: 5099986887415563606}
-  - {fileID: 3178824305309232156}
   - {fileID: 4227332916745789320}
+  - {fileID: 3178824305309232156}
   - {fileID: 8621853261362359182}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -513,15 +513,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level:
-  - range: 6
+  - range: 4
     damage: 6
     fireRate: 1
     cost: 50
-  - range: 8
+  - range: 6
     damage: 8
     fireRate: 0.75
     cost: 100
-  - range: 8
+  - range: 6
     damage: 10
     fireRate: 0.75
     cost: 150

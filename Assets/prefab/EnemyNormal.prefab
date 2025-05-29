@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e3ff2d7ede252429e9cf933d8f3560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 25
+  hp: 30
   moveSpeed: 2
   value: 10
   audioSource: {fileID: 1491830270528681589}

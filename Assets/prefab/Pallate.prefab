@@ -509,8 +509,8 @@ Transform:
   - {fileID: 7897728460742567791}
   - {fileID: 3063691765228146522}
   - {fileID: 7836183036466793293}
-  - {fileID: 2548824336430735506}
   - {fileID: 6028202812579325894}
+  - {fileID: 2548824336430735506}
   - {fileID: 1432319775886823846}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -578,10 +578,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0d5d7a4c4d289b4c9ad5c7f012f6c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 4
-  damage: 5
+  range: 6
+  damage: 4
   fireRate: 1
-  cost: 50
+  cost: 125
   first: 1
   last: 0
   strong: 0
@@ -691,8 +691,8 @@ MonoBehaviour:
     cost: 100
   - range: 8
     damage: 10
-    fireRate: 0.75
-    cost: 150
+    fireRate: 0.5
+    cost: 250
   towerRange: {fileID: 7495009127307507551}
 --- !u!82 &7091791282313215385
 AudioSource:
