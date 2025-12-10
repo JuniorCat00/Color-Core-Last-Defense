@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +18,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip audioClip;
 
+    private float originalSpeed;
+
     void Awake()
     {
         rb2d = GetComponent<Rigidbody2D>();
@@ -25,6 +27,8 @@ public class Enemy : MonoBehaviour
         {
             audioSource = GetComponent<AudioSource>();
         }
+
+        originalSpeed = moveSpeed;
     }
 
     void Start()
@@ -70,10 +74,23 @@ public class Enemy : MonoBehaviour
                 AudioSource src = soundGO.AddComponent<AudioSource>();
                 src.clip = audioClip;
                 src.Play();
-                Destroy(soundGO, audioClip.length); // ź�����ѧ���§��
+                Destroy(soundGO, audioClip.length); // ลบทิ้งหลังเสียงจบ
             }
 
             Destroy(gameObject);
         }
+    }
+    // ✦ เพิ่มสำหรับระบบสกิล (Command Pattern)
+    public void ApplySlow(float multiplier, float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(SlowCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator SlowCoroutine(float multiplier, float duration)
+    {
+        moveSpeed = originalSpeed / multiplier; // ลดความเร็ว 1.5f
+        yield return new WaitForSeconds(duration);
+        moveSpeed = originalSpeed;             // คืนค่าเดิมเมื่อหมดเวลา
     }
 }
