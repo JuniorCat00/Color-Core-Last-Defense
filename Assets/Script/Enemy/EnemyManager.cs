@@ -70,11 +70,14 @@ public class EnemyManager : MonoBehaviour
 
         if (!waveOver && waveClear && enemies.Length == 0)
         {
-            Player.main.ink += 50 + (10 * wave);
+            int reward = 50 + (10 * wave);
+            EventManager.WaveReward(reward);
             waveOver = true;
             wavePanel.SetActive(true);
         }
     }
+
+
 
     void SetWave()
     {

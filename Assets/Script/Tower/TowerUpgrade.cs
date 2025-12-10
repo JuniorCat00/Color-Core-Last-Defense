@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class TowerUpgrade : MonoBehaviour
@@ -22,39 +21,42 @@ public class TowerUpgrade : MonoBehaviour
     private Tower tower;
     [SerializeField] private TowerRange towerRange;
 
-
     void Awake()
     {
         tower = GetComponent<Tower>();
         currentCost = level[0].cost.ToString();
     }
-    
+
     public void Upgrade()
     {
-        if (currentlevel < level.Length)
+        // ป้องกันออกนอกช่วง
+        if (currentlevel >= level.Length)
+            return;
+
+        int upgradeCost = level[currentlevel].cost;
+
+        // ★ ใช้ InkManager แทน Player
+        if (InkManager.main.ink >= upgradeCost)
         {
-            int upgradeCost = level[currentlevel].cost;
+            Debug.Log("Upgrading tower to level: " + (currentlevel + 1));
 
-            if (Player.main.ink >= upgradeCost)
+            tower.range = level[currentlevel].range;
+            tower.damage = level[currentlevel].damage;
+            tower.fireRate = level[currentlevel].fireRate;
+            towerRange.UpdateRange();
+
+            // ★ ใช้ InkManager แทน Player
+            InkManager.main.ink -= upgradeCost;
+
+            currentlevel++;
+
+            if (currentlevel >= level.Length)
             {
-                Debug.Log("Upgrading tower to level: " + (currentlevel + 1));
-                tower.range = level[currentlevel].range;
-                tower.damage = level[currentlevel].damage;
-                tower.fireRate = level[currentlevel].fireRate;
-                towerRange.UpdateRange();
-
-                Player.main.ink -= level[currentlevel].cost;
-
-                currentlevel++;
-
-                if (currentlevel >= level.Length)
-                {
-                    currentCost = "Max";
-                }
-                else
-                {
-                    currentCost = level[currentlevel].cost.ToString();
-                }
+                currentCost = "Max";
+            }
+            else
+            {
+                currentCost = level[currentlevel].cost.ToString();
             }
         }
     }

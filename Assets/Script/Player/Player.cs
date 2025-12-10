@@ -10,29 +10,25 @@ public class Player : MonoBehaviour
     public static Player main;
 
     [SerializeField] private int hp = 100;
-    public int ink = 500;
-
-    [SerializeField] private TextMeshProUGUI HpGUI;
-    [SerializeField] private TextMeshProUGUI InkGUI;
-
     [SerializeField] private GameObject gameOverGUI;
+
+    public int CurrentHP => hp;
 
     void Awake()
     {
         main = this;
     }
-     
-    void Update()
-    {
-        HpGUI.text = "Hp : " + hp.ToString();
-        InkGUI.text = "Ink : " + ink.ToString();
-    }
 
     public void TakeDamage(int damage)
     {
         hp -= damage;
+
+        // ส่ง Event ว่า HP เปลี่ยน
+        EventManager.PlayerHpChanged(hp);
+
         if (hp <= 0)
         {
+            EventManager.PlayerDead();
             gameOverGUI.SetActive(true);
         }
     }

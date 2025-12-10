@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,52 +8,60 @@ using UnityEngine.UI;
 
 public class TowerManager : MonoBehaviour
 {
-    [Header("Tower")]
+    [Header("Tower Prefabs")]
     [SerializeField] private GameObject BrushTower;
     [SerializeField] private GameObject PencilTower;
     [SerializeField] private GameObject PallateTower;
 
+    [Header("Layer")]
     [SerializeField] private LayerMask towerLayer;
 
+    [Header("UI")]
     [SerializeField] private GameObject panel;
     [SerializeField] private GameObject sellPanel;
     [SerializeField] private TextMeshProUGUI towerName;
     [SerializeField] private TextMeshProUGUI towerLevel;
     [SerializeField] private TextMeshProUGUI towerCost;
     [SerializeField] private TextMeshProUGUI towerTarget;
-
     [SerializeField] private TextMeshProUGUI towerDamage;
     [SerializeField] private TextMeshProUGUI towerRange;
     [SerializeField] private TextMeshProUGUI towerFireRate;
+    [SerializeField] private Image towerIconImage;
 
+    [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip audioClip;
 
-    [SerializeField] private Image towerIconImage;
-
-    private GameObject selectedTower;
-    private GameObject placingTower;
+    private GameObject selectedTower = null;
+    private GameObject placingTower = null;
 
     private void Awake()
     {
-        InputSystem.EnableDevice(UnityEngine.InputSystem.Touchscreen.current);
+        if (Touchscreen.current != null)
+            InputSystem.EnableDevice(Touchscreen.current);
     }
 
     void Update()
     {
+        //❗ กดปุ่มยกเลิกการวาง
         if (InputReader.CancelThisFrame)
         {
-            ClearSelection();
+            ClearPlacementOnly();
         }
 
-        if (placingTower)
+        // ถ้ากำลังวางป้อมใหม่
+        if (placingTower != null)
         {
-            if (!placingTower.GetComponent<TowerPlacement>().isPlacing)
+            var tp = placingTower.GetComponent<TowerPlacement>();
+
+            // เมื่อป้อมวางเสร็จแล้ว
+            if (!tp.isPlacing)
             {
                 placingTower = null;
             }
         }
-            
+
+        //❗ ตรวจการแตะเพื่อเลือกป้อม
         if (InputReader.TapThisFrame)
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -63,156 +71,135 @@ public class TowerManager : MonoBehaviour
 
             if (hit.collider != null)
             {
-                if (selectedTower)
-                {
-                    GameObject range1 = selectedTower.transform.GetChild(2).gameObject;
-                    range1.GetComponent<SpriteRenderer>().enabled = false;
-                }
-
-                selectedTower = hit.collider.gameObject;
-                GameObject range2 = selectedTower.transform.GetChild(2).gameObject;
-                range2.GetComponent<SpriteRenderer>().enabled = true;
-
-                panel.SetActive(true);
-                sellPanel.SetActive(true);
-                towerName.text = selectedTower.name.Replace("(Clone)", "").Trim();
-                towerLevel.text = "Tower LVL : " + selectedTower.GetComponent<TowerUpgrade>().currentlevel.ToString();
-                towerCost.text = selectedTower.GetComponent<TowerUpgrade>().currentCost;
-
-                Tower tower = selectedTower.GetComponent<Tower>();
-
-                if (tower.first)
-                    towerTarget.text = "First";
-                else if (tower.last)
-                    towerTarget.text = "Last";
-                else if (tower.strong)
-                    towerTarget.text = "Strongest";
-                else if (tower.weak)
-                    towerTarget.text = "Weakest";
-
-                if (towerIconImage != null && tower.towerIcon != null)
-                {
-                    towerIconImage.sprite = tower.towerIcon;
-                    towerIconImage.enabled = true;
-                }
-                else
-                {
-                    towerIconImage.enabled = false;
-                }
-
-                if (hit.collider != null)
-                {
-                    if (audioSource != null && audioClip != null)
-                    {
-                        audioSource.PlayOneShot(audioClip);
-                    }
-                    selectedTower = hit.collider.gameObject;
-
-                    selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
-                    panel.SetActive(true);
-
-                    UpdateTowerStatsUI();
-                }
+                SelectTower(hit.collider.gameObject);
             }
-           /* else if (selectedTower)
+            else
             {
-                if (audioSource != null && audioClip != null)
-                {
-                    audioSource.PlayOneShot(audioClip);
-                }
-                sellPanel.SetActive(false);
-                panel.SetActive(false);
-                GameObject range1 = selectedTower.transform.GetChild(2).gameObject;
-                range1.GetComponent<SpriteRenderer>().enabled = false;
-                selectedTower = null;
-            }*/
+                DeselectTower();
+            }
         }
     }
 
-    public void ClosePanel()
+    // -----------------------------------------------------------------------
+    // เลือกป้อม
+    // -----------------------------------------------------------------------
+    private void SelectTower(GameObject towerObj)
     {
-        if (selectedTower)
+        // ปิดวงกลมของป้อมเก่า
+        if (selectedTower != null)
         {
             selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
-            selectedTower = null;
         }
+
+        selectedTower = towerObj;
+
+        // แสดงวงกลม range
+        selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
+
+        // เล่นเสียงคลิก
+        if (audioSource && audioClip)
+            audioSource.PlayOneShot(audioClip);
+
+        panel.SetActive(true);
+        sellPanel.SetActive(true);
+
+        TowerUpgrade upgrade = selectedTower.GetComponent<TowerUpgrade>();
+
+        towerName.text = selectedTower.name.Replace("(Clone)", "").Trim();
+        towerLevel.text = "Tower LVL : " + upgrade.currentlevel;
+        towerCost.text = upgrade.currentCost;
+
+        UpdateTowerStatsUI();
+    }
+
+    private void DeselectTower()
+    {
+        if (selectedTower != null)
+        {
+            selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
+        }
+
+        selectedTower = null;
 
         panel.SetActive(false);
         sellPanel.SetActive(false);
+    }
 
+    // -----------------------------------------------------------------------
+    // ปิด UI และลบเฉพาะป้อมที่ "ยังไม่ได้วาง"
+    // -----------------------------------------------------------------------
+    public void ClearPlacementOnly()
+    {
         if (audioSource && audioClip)
-        {
             audioSource.PlayOneShot(audioClip);
-        }
-    }
 
-    public void SellSelectedTower()
-    {
-        if (selectedTower)
+        if (placingTower != null)
         {
-            Player.main.ink += selectedTower.GetComponent<Tower>().cost / 2;
-            Destroy(selectedTower);
-            sellPanel.SetActive(false);
-            panel.SetActive(false);
-            selectedTower = null;
-            if (audioSource != null && audioClip != null)
+            var tp = placingTower.GetComponent<TowerPlacement>();
+
+            if (tp != null && tp.isPlacing)
             {
-                audioSource.PlayOneShot(audioClip);
+                Destroy(placingTower);
             }
-        }
-    }
-
-    public void ClearSelection()
-    {
-        if (audioSource != null && audioClip != null)
-        {
-            audioSource.PlayOneShot(audioClip);
-        }
-        if (placingTower)
-        {
-            Destroy(placingTower);
             placingTower = null;
         }
     }
 
+    // -----------------------------------------------------------------------
+    // ซื้อป้อมใหม่
+    // -----------------------------------------------------------------------
     public void SetTower(GameObject tower)
     {
-        ClearSelection();
+        // ❗ อย่าลบป้อมที่เลือกอยู่
+        // เพราะจะทำให้ป้อมถูกลบผิดตัว
+
+        // ลบเฉพาะป้อมที่กำลังวางอยู่
+        ClearPlacementOnly();
+
+        // สร้างการวางป้อมใหม่
         placingTower = Instantiate(tower);
     }
 
+    // -----------------------------------------------------------------------
+    // อัปเกรดป้อม
+    // -----------------------------------------------------------------------
     public void UpgradeSelected()
     {
-        if (selectedTower)
-        {
-            selectedTower.GetComponent<TowerUpgrade>().Upgrade();
-            UpdateTowerStatsUI();
-            if (audioSource != null && audioClip != null)
-            {
-                audioSource.PlayOneShot(audioClip);
-            }
-        }
+        if (selectedTower == null) return;
+
+        var upgrade = selectedTower.GetComponent<TowerUpgrade>();
+        if (upgrade == null) return;
+
+        upgrade.Upgrade();
+        UpdateTowerStatsUI();
+
+        if (audioSource && audioClip)
+            audioSource.PlayOneShot(audioClip);
     }
 
+    // -----------------------------------------------------------------------
+    // อัปเดต UI Stats
+    // -----------------------------------------------------------------------
     private void UpdateTowerStatsUI()
     {
         if (selectedTower == null) return;
 
         Tower tower = selectedTower.GetComponent<Tower>();
+        TowerUpgrade upgrade = selectedTower.GetComponent<TowerUpgrade>();
 
-        towerLevel.text = "Tower LVL : " + selectedTower.GetComponent<TowerUpgrade>().currentlevel.ToString();
-        towerCost.text = selectedTower.GetComponent<TowerUpgrade>().currentCost;
+        towerLevel.text = "Tower LVL : " + upgrade.currentlevel;
+        towerCost.text = upgrade.currentCost;
 
-        towerDamage.text = "Damage : " + tower.damage.ToString("");
-        towerRange.text = "Range : " + tower.range.ToString("");
-        towerFireRate.text = "Fire Rate : " + tower.fireRate.ToString("");
+        towerDamage.text = "Damage : " + tower.damage;
+        towerRange.text = "Range : " + tower.range;
+        towerFireRate.text = "Fire Rate : " + tower.fireRate;
 
         if (towerIconImage != null && tower.towerIcon != null)
         {
             towerIconImage.sprite = tower.towerIcon;
             towerIconImage.enabled = true;
         }
-        else if (towerIconImage != null)
+        else if (towerIconImage)
         {
             towerIconImage.enabled = false;
         }
@@ -223,48 +210,68 @@ public class TowerManager : MonoBehaviour
         else if (tower.weak) towerTarget.text = "Weakest";
     }
 
-    public void ChangeTarget()
+    // -----------------------------------------------------------------------
+    // ขายป้อม
+    // -----------------------------------------------------------------------
+    public void SellSelectedTower()
     {
-        if (selectedTower)
-        {
-            if (audioSource != null && audioClip != null)
-            {
-                audioSource.PlayOneShot(audioClip);
-            }
-            Tower tower = selectedTower.GetComponent<Tower>();
-            if (tower.first)
-            {
-                tower.first = false;
-                tower.last = true;
-                tower.strong = false;
-                tower.weak = false;
-                towerTarget.text = "Last";
-            }
-            else if (tower.last)
-            {
-                tower.first = false;
-                tower.last = false;
-                tower.strong = true;
-                tower.weak = false;
-                towerTarget.text = "Strong";
-            }
-            else if (tower.strong)
-            {
-                tower.first = false;
-                tower.last = false;
-                tower.strong = false;
-                tower.weak = true;
-                towerTarget.text = "Weak";
-            }
-            else if (tower.weak)
-            {
-                tower.first = true;
-                tower.last = false;
-                tower.strong = false;
-                tower.weak = false;
-                towerTarget.text = "First";
-            }
-        }
+        if (selectedTower == null) return;
+
+        InkManager.main.ink += selectedTower.GetComponent<Tower>().cost / 2;
+
+        Destroy(selectedTower);
+        selectedTower = null;
+
+        panel.SetActive(false);
+        sellPanel.SetActive(false);
+
+        if (audioSource && audioClip)
+            audioSource.PlayOneShot(audioClip);
     }
 
+    // -----------------------------------------------------------------------
+    // สลับเป้าหมายยิง
+    // -----------------------------------------------------------------------
+    public void ChangeTarget()
+    {
+        if (selectedTower == null) return;
+
+        if (audioSource && audioClip)
+            audioSource.PlayOneShot(audioClip);
+
+        Tower tower = selectedTower.GetComponent<Tower>();
+
+        if (tower.first)
+        {
+            tower.first = false;
+            tower.last = true;
+            tower.strong = false;
+            tower.weak = false;
+            towerTarget.text = "Last";
+        }
+        else if (tower.last)
+        {
+            tower.first = false;
+            tower.last = false;
+            tower.strong = true;
+            tower.weak = false;
+            towerTarget.text = "Strongest";
+        }
+        else if (tower.strong)
+        {
+            tower.first = false;
+            tower.last = false;
+            tower.strong = false;
+            tower.weak = true;
+            towerTarget.text = "Weakest";
+        }
+        else if (tower.weak)
+        {
+            tower.first = true;
+            tower.last = false;
+            tower.strong = false;
+            tower.weak = false;
+            towerTarget.text = "First";
+        }
+    }
 }

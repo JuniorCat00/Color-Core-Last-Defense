@@ -66,7 +66,8 @@ public class Enemy : MonoBehaviour
         hp -= damage;
         if (hp <= 0)
         {
-            Player.main.ink += value;
+            // ★ แจ้ง Event ให้ InkManager จัดการเงิน
+            EventManager.EnemyKilled(value);
 
             if (audioClip != null)
             {
@@ -74,7 +75,7 @@ public class Enemy : MonoBehaviour
                 AudioSource src = soundGO.AddComponent<AudioSource>();
                 src.clip = audioClip;
                 src.Play();
-                Destroy(soundGO, audioClip.length); // ลบทิ้งหลังเสียงจบ
+                Destroy(soundGO, audioClip.length);
             }
 
             Destroy(gameObject);

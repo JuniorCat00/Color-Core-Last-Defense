@@ -9,22 +9,45 @@ public class InputReader : MonoBehaviour
     public static bool TapThisFrame { get; private set; }
     public static bool CancelThisFrame { get; private set; }
 
+    void Awake()
+    {
+        // ป้องกัน Touchscreen เป็น null ในบางอุปกรณ์
+        if (Touchscreen.current != null)
+        {
+            InputSystem.EnableDevice(Touchscreen.current);
+        }
+
+        // ป้องกันไม่ให้โดนลบตอนเปลี่ยนซีน
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     private void Update()
     {
         TapThisFrame = false;
         CancelThisFrame = false;
 
-        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+        // ---- TOUCH INPUT ----
+        if (Touchscreen.current != null)
         {
-            PointerPosition = Touchscreen.current.primaryTouch.position.ReadValue();
-            TapThisFrame = true;
+            var touch = Touchscreen.current.primaryTouch;
+
+            if (touch.press.wasPressedThisFrame)
+            {
+                PointerPosition = touch.position.ReadValue();
+                TapThisFrame = true;
+                return;
+            }
         }
-        else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+
+        // ---- MOUSE INPUT (PC Editor) ----
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             PointerPosition = Mouse.current.position.ReadValue();
             TapThisFrame = true;
+            return;
         }
 
+        // ---- KEYBOARD (ยกเลิกการวาง) ----
         if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
         {
             CancelThisFrame = true;

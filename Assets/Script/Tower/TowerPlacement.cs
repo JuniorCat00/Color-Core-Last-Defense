@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,33 +34,43 @@ public class TowerPlacement : MonoBehaviour
             if (InputReader.TapThisFrame)
             {
                 float currentTime = Time.time;
-                if (currentTime - lastTapTime < doubleTapThreshold && !isRestricted && tower.cost <= Player.main.ink)
+
+                // ★ แก้ไข: ใช้ InkManager แทน Player
+                if (currentTime - lastTapTime < doubleTapThreshold &&
+                    !isRestricted &&
+                    tower.cost <= InkManager.main.ink)
                 {
                     ConfirmPlacement();
                 }
+
                 lastTapTime = currentTime;
             }
         }
 
         rangeSprite.color = isRestricted ? red : gray;
-
     }
 
     public void ConfirmPlacement()
     {
-        if (!isRestricted && tower.cost <= Player.main.ink)
+        // ★ แก้ไขตรงนี้ด้วย
+        if (!isRestricted && tower.cost <= InkManager.main.ink)
         {
             rangeCollider.enabled = true;
             isPlacing = false;
             rangeSprite.enabled = false;
-            Player.main.ink -= tower.cost;
+
+            // ★ ลดเงินผ่าน InkManager
+            InkManager.main.ink -= tower.cost;
+
             GetComponent<TowerPlacement>().enabled = false;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Restricted" || collision.gameObject.tag == "Tower" && isPlacing)
+        if ((collision.gameObject.CompareTag("Restricted") ||
+             collision.gameObject.CompareTag("Tower"))
+            && isPlacing)
         {
             isRestricted = true;
         }
@@ -68,10 +78,11 @@ public class TowerPlacement : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Restricted" || collision.gameObject.tag == "Tower" && isPlacing)
+        if ((collision.gameObject.CompareTag("Restricted") ||
+             collision.gameObject.CompareTag("Tower"))
+            && isPlacing)
         {
             isRestricted = false;
         }
     }
-
 }
