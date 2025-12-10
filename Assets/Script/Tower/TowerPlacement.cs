@@ -35,7 +35,6 @@ public class TowerPlacement : MonoBehaviour
             {
                 float currentTime = Time.time;
 
-                // ★ แก้ไข: ใช้ InkManager แทน Player
                 if (currentTime - lastTapTime < doubleTapThreshold &&
                     !isRestricted &&
                     tower.cost <= InkManager.main.ink)
@@ -52,14 +51,12 @@ public class TowerPlacement : MonoBehaviour
 
     public void ConfirmPlacement()
     {
-        // ★ แก้ไขตรงนี้ด้วย
         if (!isRestricted && tower.cost <= InkManager.main.ink)
         {
             rangeCollider.enabled = true;
             isPlacing = false;
             rangeSprite.enabled = false;
 
-            // ★ ลดเงินผ่าน InkManager
             InkManager.main.ink -= tower.cost;
 
             GetComponent<TowerPlacement>().enabled = false;

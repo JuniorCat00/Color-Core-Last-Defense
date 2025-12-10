@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
     {
         hp -= damage;
 
-        // ส่ง Event ว่า HP เปลี่ยน
         EventManager.PlayerHpChanged(hp);
 
         if (hp <= 0)

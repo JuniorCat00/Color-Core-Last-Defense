@@ -11,13 +11,10 @@ public class InputReader : MonoBehaviour
 
     void Awake()
     {
-        // ป้องกัน Touchscreen เป็น null ในบางอุปกรณ์
         if (Touchscreen.current != null)
         {
             InputSystem.EnableDevice(Touchscreen.current);
         }
-
-        // ป้องกันไม่ให้โดนลบตอนเปลี่ยนซีน
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -26,7 +23,6 @@ public class InputReader : MonoBehaviour
         TapThisFrame = false;
         CancelThisFrame = false;
 
-        // ---- TOUCH INPUT ----
         if (Touchscreen.current != null)
         {
             var touch = Touchscreen.current.primaryTouch;
@@ -39,7 +35,6 @@ public class InputReader : MonoBehaviour
             }
         }
 
-        // ---- MOUSE INPUT (PC Editor) ----
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             PointerPosition = Mouse.current.position.ReadValue();
@@ -47,7 +42,6 @@ public class InputReader : MonoBehaviour
             return;
         }
 
-        // ---- KEYBOARD (ยกเลิกการวาง) ----
         if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
         {
             CancelThisFrame = true;

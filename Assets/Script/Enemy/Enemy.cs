@@ -55,7 +55,7 @@ public class Enemy : MonoBehaviour
     }
 
     void FixedUpdate()
-    { 
+    {
         Vector2 direction = (checkpoint.position - transform.position).normalized;
         transform.right = checkpoint.position - transform.position;
         rb2d.velocity = direction * moveSpeed;
@@ -66,7 +66,6 @@ public class Enemy : MonoBehaviour
         hp -= damage;
         if (hp <= 0)
         {
-            // ★ แจ้ง Event ให้ InkManager จัดการเงิน
             EventManager.EnemyKilled(value);
 
             if (audioClip != null)
@@ -81,7 +80,6 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    // ✦ เพิ่มสำหรับระบบสกิล (Command Pattern)
     public void ApplySlow(float multiplier, float duration)
     {
         StopAllCoroutines();
@@ -90,8 +88,8 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator SlowCoroutine(float multiplier, float duration)
     {
-        moveSpeed = originalSpeed / multiplier; // ลดความเร็ว 1.5f
+        moveSpeed = originalSpeed / multiplier;
         yield return new WaitForSeconds(duration);
-        moveSpeed = originalSpeed;             // คืนค่าเดิมเมื่อหมดเวลา
+        moveSpeed = originalSpeed;
     }
 }

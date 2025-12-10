@@ -43,25 +43,21 @@ public class TowerManager : MonoBehaviour
 
     void Update()
     {
-        //❗ กดปุ่มยกเลิกการวาง
         if (InputReader.CancelThisFrame)
         {
             ClearPlacementOnly();
         }
 
-        // ถ้ากำลังวางป้อมใหม่
         if (placingTower != null)
         {
             var tp = placingTower.GetComponent<TowerPlacement>();
 
-            // เมื่อป้อมวางเสร็จแล้ว
             if (!tp.isPlacing)
             {
                 placingTower = null;
             }
         }
 
-        //❗ ตรวจการแตะเพื่อเลือกป้อม
         if (InputReader.TapThisFrame)
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -79,13 +75,8 @@ public class TowerManager : MonoBehaviour
             }
         }
     }
-
-    // -----------------------------------------------------------------------
-    // เลือกป้อม
-    // -----------------------------------------------------------------------
     private void SelectTower(GameObject towerObj)
     {
-        // ปิดวงกลมของป้อมเก่า
         if (selectedTower != null)
         {
             selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
@@ -93,10 +84,8 @@ public class TowerManager : MonoBehaviour
 
         selectedTower = towerObj;
 
-        // แสดงวงกลม range
         selectedTower.transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
 
-        // เล่นเสียงคลิก
         if (audioSource && audioClip)
             audioSource.PlayOneShot(audioClip);
 
@@ -125,9 +114,6 @@ public class TowerManager : MonoBehaviour
         sellPanel.SetActive(false);
     }
 
-    // -----------------------------------------------------------------------
-    // ปิด UI และลบเฉพาะป้อมที่ "ยังไม่ได้วาง"
-    // -----------------------------------------------------------------------
     public void ClearPlacementOnly()
     {
         if (audioSource && audioClip)
@@ -145,24 +131,13 @@ public class TowerManager : MonoBehaviour
         }
     }
 
-    // -----------------------------------------------------------------------
-    // ซื้อป้อมใหม่
-    // -----------------------------------------------------------------------
     public void SetTower(GameObject tower)
     {
-        // ❗ อย่าลบป้อมที่เลือกอยู่
-        // เพราะจะทำให้ป้อมถูกลบผิดตัว
-
-        // ลบเฉพาะป้อมที่กำลังวางอยู่
         ClearPlacementOnly();
 
-        // สร้างการวางป้อมใหม่
         placingTower = Instantiate(tower);
     }
 
-    // -----------------------------------------------------------------------
-    // อัปเกรดป้อม
-    // -----------------------------------------------------------------------
     public void UpgradeSelected()
     {
         if (selectedTower == null) return;
@@ -177,9 +152,7 @@ public class TowerManager : MonoBehaviour
             audioSource.PlayOneShot(audioClip);
     }
 
-    // -----------------------------------------------------------------------
-    // อัปเดต UI Stats
-    // -----------------------------------------------------------------------
+
     private void UpdateTowerStatsUI()
     {
         if (selectedTower == null) return;
@@ -210,9 +183,6 @@ public class TowerManager : MonoBehaviour
         else if (tower.weak) towerTarget.text = "Weakest";
     }
 
-    // -----------------------------------------------------------------------
-    // ขายป้อม
-    // -----------------------------------------------------------------------
     public void SellSelectedTower()
     {
         if (selectedTower == null) return;
@@ -229,9 +199,6 @@ public class TowerManager : MonoBehaviour
             audioSource.PlayOneShot(audioClip);
     }
 
-    // -----------------------------------------------------------------------
-    // สลับเป้าหมายยิง
-    // -----------------------------------------------------------------------
     public void ChangeTarget()
     {
         if (selectedTower == null) return;

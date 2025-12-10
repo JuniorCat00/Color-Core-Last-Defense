@@ -29,13 +29,11 @@ public class TowerUpgrade : MonoBehaviour
 
     public void Upgrade()
     {
-        // ป้องกันออกนอกช่วง
         if (currentlevel >= level.Length)
             return;
 
         int upgradeCost = level[currentlevel].cost;
 
-        // ★ ใช้ InkManager แทน Player
         if (InkManager.main.ink >= upgradeCost)
         {
             Debug.Log("Upgrading tower to level: " + (currentlevel + 1));
@@ -45,7 +43,6 @@ public class TowerUpgrade : MonoBehaviour
             tower.fireRate = level[currentlevel].fireRate;
             towerRange.UpdateRange();
 
-            // ★ ใช้ InkManager แทน Player
             InkManager.main.ink -= upgradeCost;
 
             currentlevel++;

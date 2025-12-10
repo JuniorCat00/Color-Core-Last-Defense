@@ -6,7 +6,6 @@ public class SkillCommand : ISkillCommand
 {
     private SkillType type;
 
-    // ค่าพื้นฐานที่ใช้กับทุกสกิล
     private float slowMultiplier;
     private float slowDuration;
     private int damageAmount;
